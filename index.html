@@ -1,0 +1,1773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Data Communication & Network</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+ 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@600;700&display=swap');
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #E0F2FE, #F8FAFC);
+  color: #0F172A;
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* MAIN CARD */
+.quiz-box {
+  background: #FFFFFF;
+  width: 95%;
+  max-width: 700px;
+  padding: 34px;
+  border-radius: 20px;
+  box-shadow: 0 20px 45px rgba(2, 132, 199, 0.12);
+  border: 1px solid #E2E8F0;
+}
+
+/* TITLE */
+h1 {
+  text-align: center;
+  margin-bottom: 14px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  color: #0369A1;
+  letter-spacing: 0.8px;
+}
+
+/* COUNTER */
+.counter {
+  text-align: center;
+  font-size: 13px;
+  color: #64748B;
+  margin-bottom: 22px;
+}
+
+/* QUESTION */
+.question {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 22px;
+  line-height: 1.7;
+  color: #020617;
+}
+
+/* OPTIONS */
+.options button {
+  width: 100%;
+  padding: 15px;
+  margin: 10px 0;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  color: #0F172A;
+  text-align: left;
+  cursor: pointer;
+  font-size: 15px;
+  transition: all 0.25s ease;
+}
+
+/* HOVER */
+.options button:hover {
+  border-color: #0EA5E9;
+  background: #E0F2FE;
+  transform: translateX(4px);
+}
+
+/* CORRECT */
+.options button.correct {
+  background: #ECFDF5;
+  border-color: #10B981;
+  color: #065F46;
+}
+
+/* WRONG */
+.options button.wrong {
+  background: #FEF2F2;
+  border-color: #EF4444;
+  color: #7F1D1D;
+}
+
+/* NAV BUTTONS */
+.nav-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 26px;
+}
+
+.nav-buttons button {
+  flex: 1;
+  padding: 14px;
+  background: linear-gradient(135deg, #0EA5E9, #2563EB);
+  border: none;
+  border-radius: 14px;
+  color: #FFFFFF;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+/* NAV HOVER */
+.nav-buttons button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.25);
+}
+
+/* DISABLED */
+.nav-buttons button:disabled {
+  background: #CBD5E1;
+  color: #64748B;
+  cursor: not-allowed;
+}
+
+/* RESTART */
+.restart-btn {
+  margin-top: 26px;
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, #06B6D4, #0EA5E9);
+  border: none;
+  border-radius: 14px;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.restart-btn:hover {
+  box-shadow: 0 10px 20px rgba(14, 165, 233, 0.3);
+}
+
+/* RESULT */
+.result {
+  text-align: center;
+  font-size: 18px;
+  margin-top: 24px;
+  font-weight: 600;
+  color: #0369A1;
+}
+</style>
+
+</head>
+<body>
+
+
+<div class="quiz-box">
+  <h1>SWD 315 Quiz</h1>
+  <div class="counter" id="counter"></div>
+
+  <div class="question" id="question"></div>
+  <div class="options" id="options"></div>
+
+  <div class="nav-buttons">
+    <button id="prevBtn">Previous</button>
+    <button id="nextBtn">Next</button>
+  </div>
+
+  <div class="result" id="result" style="display:none;"></div>
+
+<button class="restart-btn" id="restartBtn" style="display:none;">Restart Quiz</button>
+</div>
+
+<script>
+const quizData = [
+ 
+ {
+q: "A computer network is best defined as",
+o: [
+"A group of computers connected to share data and resources",
+"A system used only for Internet browsing",
+"A collection of servers used in large companies",
+"A wireless communication system"
+],
+a: 0
+},
+
+{
+q: "Which of the following is NOT typically considered a host device in a network?",
+o: [
+"Desktop computer",
+"Printer",
+"Router",
+"Smartphone"
+],
+a: 2
+},
+
+{
+q: "Which network device is primarily responsible for connecting multiple networks and forwarding packets between them?",
+o: [
+"Switch",
+"Router",
+"Hub",
+"Access Point"
+],
+a: 1
+},
+
+{
+q: "A device that connects multiple devices within a LAN and forwards data using MAC addresses is a",
+o: [
+"Router",
+"Switch",
+"Gateway",
+"Firewall"
+],
+a: 1
+},
+
+{
+q: "Which network topology connects all devices to a single central device such as a switch or hub?",
+o: [
+"Bus topology",
+"Ring topology",
+"Star topology",
+"Mesh topology"
+],
+a: 2
+},
+
+{
+q: "Which topology is characterized by each device being connected to every other device in the network?",
+o: [
+"Ring topology",
+"Star topology",
+"Mesh topology",
+"Bus topology"
+],
+a: 2
+},
+
+{
+q: "A network that typically connects devices within about 10 meters for personal use is known as",
+o: [
+"LAN",
+"WAN",
+"PAN",
+"MAN"
+],
+a: 2
+},
+
+{
+q: "Which type of network usually spans a city or metropolitan area?",
+o: [
+"LAN",
+"PAN",
+"MAN",
+"WLAN"
+],
+a: 2
+},
+
+{
+q: "The largest example of a Wide Area Network (WAN) is",
+o: [
+"A university network",
+"A corporate intranet",
+"The Internet",
+"A home Wi-Fi network"
+],
+a: 2
+},
+
+{
+q: "A Wireless Local Area Network primarily uses which technology to connect devices?",
+o: [
+"Bluetooth",
+"Ethernet",
+"Wi-Fi",
+"Fiber Channel"
+],
+a: 2
+},
+
+{
+q: "Which network is specifically designed to connect servers to storage devices in data centers?",
+o: [
+"LAN",
+"WLAN",
+"SAN",
+"PAN"
+],
+a: 2
+},
+
+{
+q: "A Virtual Private Network (VPN) is mainly used to",
+o: [
+"Increase Internet speed",
+"Create an encrypted connection over a public network",
+"Replace routers in a network",
+"Provide wireless access points"
+],
+a: 1
+},
+
+{
+q: "Which of the following best describes a logical network diagram?",
+o: [
+"It shows the actual cables and physical layout",
+"It shows how data flows and network addressing",
+"It shows the location of hardware devices",
+"It represents electrical wiring inside devices"
+],
+a: 1
+},
+
+{
+q: "In the connection process to the Internet, which device typically performs Network Address Translation (NAT)?",
+o: [
+"Switch",
+"Router",
+"Hub",
+"Firewall"
+],
+a: 1
+},
+
+{
+q: "Which of the following is NOT one of the four basic requirements of a reliable network?",
+o: [
+"Fault tolerance",
+"Scalability",
+"Quality of Service",
+"Topology optimization"
+],
+a: 3
+},
+
+{
+q: "The ability of a network to continue functioning even when a component fails is known as",
+o: [
+"Scalability",
+"Fault tolerance",
+"Security",
+"Virtualization"
+],
+a: 1
+},
+
+{
+q: "Quality of Service (QoS) in networking primarily focuses on",
+o: [
+"Increasing physical network size",
+"Prioritizing important network traffic",
+"Replacing routers with switches",
+"Eliminating encryption"
+],
+a: 1
+},
+
+{
+q: "The trend where users connect their personal devices to organizational networks is called",
+o: [
+"BYOD",
+"QoS",
+"VPN",
+"LAN expansion"
+],
+a: 0
+},
+
+{
+q: "Which network threat involves attackers tricking users into revealing sensitive information through fake messages?",
+o: [
+"Malware",
+"Phishing",
+"DoS attack",
+"Data backup"
+],
+a: 1
+},
+
+{
+q: "Which of the following careers is primarily responsible for designing and implementing network infrastructure?",
+o: [
+"Network Engineer",
+"Network Analyst",
+"Data Center Technician",
+"Technical Support Assistant"
+],
+a: 0
+},
+{
+q: "Which of the following devices is classified as an intermediary network device rather than a host device?",
+o: [
+"Laptop",
+"Printer",
+"Router",
+"IP phone"
+],
+a: 2
+},
+
+{
+q: "A network diagram that illustrates actual hardware connections such as cables, routers, and switches is called a",
+o: [
+"Logical diagram",
+"Physical diagram",
+"Virtual diagram",
+"Protocol diagram"
+],
+a: 1
+},
+
+{
+q: "Which network topology is most vulnerable to complete network failure if the central device fails?",
+o: [
+"Bus topology",
+"Star topology",
+"Mesh topology",
+"Ring topology"
+],
+a: 1
+},
+
+{
+q: "Which topology allows data to travel through devices arranged in a circular path?",
+o: [
+"Bus topology",
+"Ring topology",
+"Star topology",
+"Hybrid topology"
+],
+a: 1
+},
+
+{
+q: "A company connects several office LANs across different cities using fiber links provided by a telecom company. This is best described as a",
+o: [
+"PAN",
+"WLAN",
+"MAN",
+"WAN"
+],
+a: 3
+},
+
+{
+q: "Which of the following network types is most likely to use Bluetooth or infrared communication?",
+o: [
+"LAN",
+"PAN",
+"MAN",
+"WAN"
+],
+a: 1
+},
+
+{
+q: "A storage network designed specifically for high-speed data access between servers and storage devices is called",
+o: [
+"WLAN",
+"PAN",
+"SAN",
+"MAN"
+],
+a: 2
+},
+
+{
+q: "Which of the following is NOT typically used to provide wireless connectivity within a LAN?",
+o: [
+"Access Point",
+"Router",
+"Hub",
+"Wireless network adapter"
+],
+a: 2
+},
+
+{
+q: "Which statement best explains why mesh topology is rarely used in large networks?",
+o: [
+"It has poor reliability",
+"It is difficult and expensive to implement",
+"It cannot transmit data in both directions",
+"It does not support redundancy"
+],
+a: 1
+},
+
+{
+q: "A network that allows employees to securely access internal company resources over the Internet is most likely using",
+o: [
+"WLAN",
+"VPN",
+"PAN",
+"Hub technology"
+],
+a: 1
+},
+
+{
+q: "Which component normally acts as the bridge between a local network and an Internet Service Provider?",
+o: [
+"Switch",
+"Router",
+"Printer",
+"Hub"
+],
+a: 1
+},
+
+{
+q: "Which of the following best describes scalability in networking?",
+o: [
+"Ability to encrypt all network data",
+"Ability to grow without major redesign",
+"Ability to connect only wireless devices",
+"Ability to eliminate network faults"
+],
+a: 1
+},
+
+{
+q: "Which of the following network requirements ensures that voice and video calls receive priority over less critical traffic?",
+o: [
+"Fault tolerance",
+"Security",
+"Quality of Service",
+"Redundancy"
+],
+a: 2
+},
+
+{
+q: "Which of the following technologies allows multiple LAN devices to share a single public IP address when accessing the Internet?",
+o: [
+"VPN",
+"NAT",
+"QoS",
+"MAC filtering"
+],
+a: 1
+},
+
+{
+q: "An attacker secretly intercepts communication between two users on a public Wi-Fi network. This attack is known as",
+o: [
+"Phishing",
+"Man-in-the-Middle attack",
+"DoS attack",
+"Malware injection"
+],
+a: 1
+},
+
+{
+q: "Which of the following security measures converts readable data into an unreadable format during transmission?",
+o: [
+"Authentication",
+"Encryption",
+"Access control",
+"Firewall filtering"
+],
+a: 1
+},
+
+{
+q: "A cyberattack that floods a server with excessive traffic in order to make it unavailable is known as",
+o: [
+"Phishing attack",
+"Denial of Service attack",
+"Man-in-the-Middle attack",
+"Spyware attack"
+],
+a: 1
+},
+
+{
+q: "Which of the following networking trends allows employees to use personal smartphones or laptops to access organizational networks?",
+o: [
+"QoS",
+"BYOD",
+"WLAN",
+"SAN"
+],
+a: 1
+},
+
+{
+q: "Which of the following networking trends allows users to access software, storage, and computing services through the Internet?",
+o: [
+"Cloud computing",
+"Video streaming",
+"BYOD",
+"PAN networking"
+],
+a: 0
+},
+
+{
+q: "Which of the following best explains why organizations implement firewalls?",
+o: [
+"To increase network bandwidth",
+"To filter and control unauthorized network traffic",
+"To convert analog signals into digital signals",
+"To provide wireless Internet access"
+],
+a: 1
+},
+{
+q: "In networking, a protocol is best defined as",
+o: [
+"A hardware device used to connect networks",
+"A set of rules governing communication between devices",
+"A type of network topology",
+"A software used for network monitoring"
+],
+a: 1
+},
+
+{
+q: "Which of the following is classified as a communication protocol?",
+o: [
+"HTTP",
+"TCP",
+"FTP",
+"DNS"
+],
+a: 1
+},
+
+{
+q: "Which protocol is primarily responsible for delivering web pages to browsers?",
+o: [
+"FTP",
+"HTTP",
+"SMTP",
+"SNMP"
+],
+a: 1
+},
+
+{
+q: "Which of the following protocols is commonly used for sending email?",
+o: [
+"SMTP",
+"FTP",
+"DNS",
+"ICMP"
+],
+a: 0
+},
+
+{
+q: "Which protocol translates domain names into IP addresses?",
+o: [
+"FTP",
+"DNS",
+"HTTP",
+"SNMP"
+],
+a: 1
+},
+
+{
+q: "Which of the following is a security protocol used to encrypt web communication?",
+o: [
+"SSL/TLS",
+"ICMP",
+"ARP",
+"SNMP"
+],
+a: 0
+},
+
+{
+q: "Which protocol is used for mapping IPv4 addresses to MAC addresses?",
+o: [
+"DNS",
+"ARP",
+"ICMP",
+"FTP"
+],
+a: 1
+},
+
+{
+q: "The OSI model contains how many layers?",
+o: [
+"4",
+"5",
+"6",
+"7"
+],
+a: 3
+},
+
+{
+q: "Which OSI layer is responsible for routing and logical addressing?",
+o: [
+"Transport layer",
+"Network layer",
+"Data link layer",
+"Session layer"
+],
+a: 1
+},
+
+{
+q: "Which OSI layer handles data formatting, encryption, and compression?",
+o: [
+"Application layer",
+"Presentation layer",
+"Session layer",
+"Transport layer"
+],
+a: 1
+},
+
+{
+q: "The TCP/IP model consists of how many layers?",
+o: [
+"4",
+"5",
+"6",
+"7"
+],
+a: 0
+},
+
+{
+q: "Which TCP/IP layer corresponds most closely to the OSI Transport layer?",
+o: [
+"Application layer",
+"Transport layer",
+"Internet layer",
+"Network access layer"
+],
+a: 1
+},
+
+{
+q: "Data encapsulation refers to the process of",
+o: [
+"Encrypting data before transmission",
+"Adding protocol headers as data moves through layers",
+"Compressing files for faster transfer",
+"Removing network addresses"
+],
+a: 1
+},
+
+{
+q: "When data reaches the transport layer and a TCP header is added, the data unit becomes a",
+o: [
+"Frame",
+"Packet",
+"Segment",
+"Bit"
+],
+a: 2
+},
+
+{
+q: "Which layer of the OSI model is responsible for MAC addressing?",
+o: [
+"Physical layer",
+"Network layer",
+"Data link layer",
+"Transport layer"
+],
+a: 2
+},
+
+{
+q: "A MAC address is best described as",
+o: [
+"A logical address assigned by the network",
+"A physical hardware address assigned to a NIC",
+"A routing address used on the Internet",
+"A temporary address assigned by DHCP"
+],
+a: 1
+},
+
+{
+q: "Which statement best distinguishes an IP address from a MAC address?",
+o: [
+"IP addresses are permanent while MAC addresses change frequently",
+"MAC addresses identify devices globally while IP addresses identify protocols",
+"MAC addresses identify devices locally while IP addresses identify devices across networks",
+"Both are identical in function"
+],
+a: 2
+},
+
+{
+q: "Which network utility is used to test whether a remote host is reachable?",
+o: [
+"Ping",
+"Netstat",
+"Ipconfig",
+"Traceroute"
+],
+a: 0
+},
+
+{
+q: "Which utility displays the path packets take from a source device to a destination?",
+o: [
+"Ping",
+"Traceroute",
+"Nslookup",
+"Netstat"
+],
+a: 1
+},
+
+{
+q: "Which command displays the IP configuration of a host system in Windows?",
+o: [
+"arp -a",
+"ipconfig",
+"netstat",
+"pathping"
+],
+a: 1
+},
+{
+q: "Which of the following protocols is primarily used for diagnostic and error reporting in IP networks?",
+o: [
+"ICMP",
+"HTTP",
+"SNMP",
+"DNS"
+],
+a: 0
+},
+
+{
+q: "Which OSI layer is responsible for establishing, managing, and terminating communication sessions?",
+o: [
+"Presentation layer",
+"Session layer",
+"Transport layer",
+"Application layer"
+],
+a: 1
+},
+
+{
+q: "Which of the following correctly represents the order of data units during encapsulation from top to bottom?",
+o: [
+"Segment → Packet → Frame → Bits",
+"Packet → Segment → Frame → Bits",
+"Frame → Packet → Segment → Bits",
+"Segment → Frame → Packet → Bits"
+],
+a: 0
+},
+
+{
+q: "Which OSI layer is responsible for converting frames into electrical or optical signals for transmission?",
+o: [
+"Data Link layer",
+"Network layer",
+"Physical layer",
+"Transport layer"
+],
+a: 2
+},
+
+{
+q: "Which protocol is responsible for reliable data transmission by ensuring ordered delivery and retransmission of lost packets?",
+o: [
+"UDP",
+"TCP",
+"IP",
+"ICMP"
+],
+a: 1
+},
+
+{
+q: "Which of the following best explains the main purpose of the OSI model?",
+o: [
+"To define actual protocols used on the Internet",
+"To provide a layered framework for understanding network communication",
+"To replace TCP/IP networking",
+"To physically connect network devices"
+],
+a: 1
+},
+
+{
+q: "Which TCP/IP layer handles logical addressing and routing?",
+o: [
+"Application layer",
+"Transport layer",
+"Internet layer",
+"Network Access layer"
+],
+a: 2
+},
+
+{
+q: "Which of the following is NOT an application layer protocol?",
+o: [
+"HTTP",
+"FTP",
+"DNS",
+"ARP"
+],
+a: 3
+},
+
+{
+q: "Which organization developed the OSI model framework?",
+o: [
+"IETF",
+"IEEE",
+"ISO",
+"ITU"
+],
+a: 2
+},
+
+{
+q: "Which standards organization develops protocols such as TCP, IP, and HTTP?",
+o: [
+"IEEE",
+"IETF",
+"ISO",
+"ITU"
+],
+a: 1
+},
+
+{
+q: "Which protocol replaces ARP in IPv6 networks?",
+o: [
+"NDP",
+"ICMP",
+"DNS",
+"TCP"
+],
+a: 0
+},
+
+{
+q: "Which of the following tools is used to display the ARP cache of a computer?",
+o: [
+"netstat",
+"arp -a",
+"ipconfig",
+"tracert"
+],
+a: 1
+},
+
+{
+q: "Which statement best describes the purpose of ARP?",
+o: [
+"To convert domain names to IP addresses",
+"To map IP addresses to MAC addresses",
+"To encrypt communication between devices",
+"To test network connectivity"
+],
+a: 1
+},
+
+{
+q: "Which network utility combines the functions of ping and traceroute?",
+o: [
+"Netstat",
+"Pathping",
+"Nslookup",
+"Ipconfig"
+],
+a: 1
+},
+
+{
+q: "Which layer of the OSI model handles segmentation and reassembly of data?",
+o: [
+"Transport layer",
+"Session layer",
+"Network layer",
+"Data link layer"
+],
+a: 0
+},
+
+{
+q: "Which of the following protocols is primarily used for network device monitoring and management?",
+o: [
+"SNMP",
+"FTP",
+"SMTP",
+"ICMP"
+],
+a: 0
+},
+
+{
+q: "Which network rule defines the structure and format of transmitted data?",
+o: [
+"Syntax rule",
+"Timing rule",
+"Semantics rule",
+"Protocol rule"
+],
+a: 0
+},
+
+{
+q: "Which rule defines the meaning of each section of transmitted data in communication protocols?",
+o: [
+"Syntax",
+"Timing",
+"Semantics",
+"Routing"
+],
+a: 2
+},
+
+{
+q: "Which rule specifies when data should be transmitted and at what speed?",
+o: [
+"Syntax rule",
+"Semantics rule",
+"Timing rule",
+"Encoding rule"
+],
+a: 2
+},
+
+{
+q: "Which of the following best explains why protocol suites are necessary?",
+o: [
+"They ensure all network devices use the same hardware",
+"They provide a coordinated set of protocols that work together for communication",
+"They replace all network standards",
+"They eliminate the need for routers"
+],
+a: 1
+},
+
+
+//Abbreviations
+{
+q: "What is the full meaning of OSI in computer networking?",
+o: [
+"Open System Interface",
+"Open Systems Interconnection",
+"Operational System Interface",
+"Open Standard Integration"
+],
+a: 1
+},
+
+{
+q: "What does TCP stand for?",
+o: [
+"Transfer Control Protocol",
+"Transmission Control Protocol",
+"Transport Communication Protocol",
+"Transmission Communication Process"
+],
+a: 1
+},
+
+{
+q: "What is the full meaning of IP in networking?",
+o: [
+"Internet Process",
+"Internet Protocol",
+"Internal Packet",
+"Integrated Protocol"
+],
+a: 1
+},
+
+{
+q: "What does HTTP stand for?",
+o: [
+"Hypertext Transfer Protocol",
+"High Transmission Text Protocol",
+"Hyperlink Transfer Process",
+"Hyper Transfer Transmission Protocol"
+],
+a: 0
+},
+
+{
+q: "What is the full meaning of FTP?",
+o: [
+"File Transmission Protocol",
+"File Transfer Protocol",
+"Fast Transfer Process",
+"File Transport Protocol"
+],
+a: 1
+},
+
+{
+q: "What does SMTP stand for?",
+o: [
+"Simple Mail Transfer Protocol",
+"Secure Mail Transfer Protocol",
+"System Mail Transmission Protocol",
+"Standard Mail Transfer Process"
+],
+a: 0
+},
+
+{
+q: "DNS stands for",
+o: [
+"Domain Naming System",
+"Domain Name System",
+"Data Network Service",
+"Domain Network Server"
+],
+a: 1
+},
+
+{
+q: "What does ARP mean in networking?",
+o: [
+"Address Resolution Protocol",
+"Address Routing Protocol",
+"Automatic Resolution Process",
+"Address Registration Protocol"
+],
+a: 0
+},
+
+{
+q: "What is the full meaning of ICMP?",
+o: [
+"Internet Control Message Protocol",
+"Internet Communication Management Protocol",
+"Internal Control Message Process",
+"Internet Channel Message Protocol"
+],
+a: 0
+},
+
+{
+q: "What does SNMP stand for?",
+o: [
+"Simple Network Management Protocol",
+"Secure Network Monitoring Protocol",
+"Standard Network Management Process",
+"Simple Network Monitoring Process"
+],
+a: 0
+},
+
+{
+q: "What is the full meaning of MAC in networking?",
+o: [
+"Machine Access Code",
+"Media Access Control",
+"Multiple Access Control",
+"Media Address Control"
+],
+a: 1
+},
+
+{
+q: "What does NIC stand for?",
+o: [
+"Network Interface Card",
+"Network Integration Controller",
+"Network Internet Card",
+"Network Interface Controller"
+],
+a: 0
+},
+
+{
+q: "What is the full meaning of LAN?",
+o: [
+"Local Area Network",
+"Logical Access Network",
+"Local Access Node",
+"Linked Area Network"
+],
+a: 0
+},
+
+{
+q: "WAN stands for",
+o: [
+"Wide Area Network",
+"Wireless Access Network",
+"Web Area Network",
+"Wide Access Node"
+],
+a: 0
+},
+
+{
+q: "MAN in networking means",
+o: [
+"Metropolitan Area Network",
+"Multiple Access Network",
+"Main Area Network",
+"Metropolitan Access Node"
+],
+a: 0
+},
+
+{
+q: "What does ISP stand for?",
+o: [
+"Internet Service Provider",
+"Internet System Provider",
+"Information Service Provider",
+"Integrated Service Protocol"
+],
+a: 0
+},
+
+{
+q: "What does IEEE stand for?",
+o: [
+"International Electrical Engineering Enterprise",
+"Institute of Electrical and Electronics Engineers",
+"International Electronics Engineering Establishment",
+"Institute of Electronic Engineering Experts"
+],
+a: 1
+},
+
+{
+q: "What is the full meaning of ISO?",
+o: [
+"International Standard Organization",
+"International Standards Organization",
+"International Organization for Standardization",
+"International System of Organization"
+],
+a: 2
+},
+
+{
+q: "What does IETF stand for?",
+o: [
+"Internet Engineering Task Force",
+"International Engineering Task Force",
+"Internet Electronic Task Framework",
+"Integrated Engineering Technology Forum"
+],
+a: 0
+},
+
+{
+q: "ITU stands for",
+o: [
+"International Telecommunications Union",
+"International Telecommunication Union",
+"Internet Telecommunication Unit",
+"Integrated Telecommunication Union"
+],
+a: 1
+},
+{
+q: "What does URL stand for?",
+o: [
+"Uniform Resource Locator",
+"Universal Resource Locator",
+"Uniform Reference Locator",
+"Universal Reference Location"
+],
+a: 0
+},
+
+{
+q: "What is the full meaning of WWW?",
+o: [
+"World Web Wide",
+"World Wide Web",
+"Wide World Web",
+"World Wireless Web"
+],
+a: 1
+},
+
+{
+q: "What does VPN stand for in networking?",
+o: [
+"Virtual Private Network",
+"Virtual Public Network",
+"Verified Private Network",
+"Virtual Protected Network"
+],
+a: 0
+},
+
+{
+q: "What is the full meaning of VoIP?",
+o: [
+"Voice over Internet Protocol",
+"Voice over Internal Protocol",
+"Virtual over Internet Protocol",
+"Voice operating Internet Protocol"
+],
+a: 0
+},
+
+{
+q: "DHCP stands for",
+o: [
+"Dynamic Host Configuration Protocol",
+"Dynamic Host Control Protocol",
+"Distributed Host Configuration Protocol",
+"Dynamic Hardware Configuration Protocol"
+],
+a: 0
+},
+
+{
+q: "What does NAT stand for in networking?",
+o: [
+"Network Address Translation",
+"Network Access Translation",
+"Node Address Translation",
+"Network Address Transmission"
+],
+a: 0
+},
+
+{
+q: "What is the full meaning of SSID in wireless networks?",
+o: [
+"Service Set Identifier",
+"System Service Identifier",
+"Secure System Identity",
+"Service System Identification"
+],
+a: 0
+},
+
+{
+q: "HTML stands for",
+o: [
+"HyperText Markup Language",
+"HyperText Machine Language",
+"Hyper Transfer Markup Language",
+"HighText Markup Language"
+],
+a: 0
+},
+
+{
+q: "CSS in web technology means",
+o: [
+"Cascading Style Sheets",
+"Computer Style Sheets",
+"Coded Style System",
+"Cascading System Sheets"
+],
+a: 0
+},
+
+
+{
+q: "What does API stand for?",
+o: [
+"Application Programming Interface",
+"Application Program Integration",
+"Applied Programming Interface",
+"Application Processing Interface"
+],
+a: 0
+},
+
+
+{
+q: "What does TCP/IP represent in networking?",
+o: [
+"Transmission Control Protocol / Internet Protocol",
+"Transfer Communication Protocol / Internet Process",
+"Transport Control Process / Internet Protocol",
+"Transmission Communication Protocol / Internet Protocol"
+],
+a: 0
+},
+{
+q: "Which OSI layer is responsible for transmitting raw bits across a physical medium?",
+o: [
+"Data Link Layer",
+"Physical Layer",
+"Network Layer",
+"Transport Layer"
+],
+a: 1
+},
+
+{
+q: "Which of the following is NOT a responsibility of the Physical Layer?",
+o: [
+"Bit synchronization",
+"Media specification",
+"Logical addressing",
+"Signal encoding"
+],
+a: 2
+},
+
+{
+q: "Which network characteristic refers to the maximum data rate that a transmission medium can carry?",
+o: [
+"Latency",
+"Bandwidth",
+"Throughput",
+"Attenuation"
+],
+a: 1
+},
+
+{
+q: "Which transmission mode allows data to travel in both directions but not simultaneously?",
+o: [
+"Simplex",
+"Half-duplex",
+"Full-duplex",
+"Multiplex"
+],
+a: 1
+},
+
+{
+q: "Which connector is commonly used with Ethernet UTP cables?",
+o: [
+"RJ11",
+"RJ45",
+"BNC",
+"SC"
+],
+a: 1
+},
+
+{
+q: "Which of the following is a major disadvantage of copper cabling?",
+o: [
+"High installation cost",
+"Low bandwidth capacity",
+"Susceptibility to electromagnetic interference",
+"Inability to support LANs"
+],
+a: 2
+},
+
+{
+q: "Which type of fiber optic cable is typically used for long-distance communication?",
+o: [
+"Multi-mode fiber",
+"Single-mode fiber",
+"Coaxial fiber",
+"Shielded fiber"
+],
+a: 1
+},
+
+{
+q: "Which of the following devices operates primarily at the Data Link Layer?",
+o: [
+"Router",
+"Switch",
+"Modem",
+"Gateway"
+],
+a: 1
+},
+
+{
+q: "Which method is used in Ethernet networks to detect collisions?",
+o: [
+"CSMA/CA",
+"CSMA/CD",
+"Token passing",
+"Polling"
+],
+a: 1
+},
+
+{
+q: "Which of the following MAC methods is commonly used in Wi-Fi networks?",
+o: [
+"CSMA/CD",
+"CSMA/CA",
+"Token passing",
+"Time division"
+],
+a: 1
+},
+
+{
+q: "In a data link frame, which field is used for error detection?",
+o: [
+"MAC header",
+"FCS",
+"Payload",
+"Protocol field"
+],
+a: 1
+},
+
+{
+q: "Which OSI layer is responsible for logical addressing and routing?",
+o: [
+"Network Layer",
+"Transport Layer",
+"Data Link Layer",
+"Session Layer"
+],
+a: 0
+},
+
+{
+q: "Which IPv4 header field prevents packets from looping indefinitely in a network?",
+o: [
+"Header length",
+"Protocol",
+"Time to Live (TTL)",
+"Fragment offset"
+],
+a: 2
+},
+
+{
+q: "Which IPv6 header field performs a similar function to IPv4 TTL?",
+o: [
+"Flow Label",
+"Hop Limit",
+"Traffic Class",
+"Payload Length"
+],
+a: 1
+},
+
+{
+q: "When a router selects the most specific route for a destination IP address, this is known as:",
+o: [
+"Shortest route selection",
+"Longest prefix match",
+"Static routing",
+"Direct routing"
+],
+a: 1
+},
+
+{
+q: "Which routing table field identifies the next device to which a packet should be forwarded?",
+o: [
+"Metric",
+"Next hop",
+"Interface",
+"Prefix"
+],
+a: 1
+},
+
+{
+q: "Which transport layer protocol provides reliable and connection-oriented communication?",
+o: [
+"UDP",
+"IP",
+"TCP",
+"ICMP"
+],
+a: 2
+},
+
+{
+q: "Which of the following characteristics belongs to UDP?",
+o: [
+"Connection-oriented",
+"Error recovery",
+"No acknowledgments",
+"Guaranteed delivery"
+],
+a: 2
+},
+
+{
+q: "Which process establishes a TCP connection between a client and server?",
+o: [
+"Two-step negotiation",
+"Three-way handshake",
+"Four-phase commit",
+"Token exchange"
+],
+a: 1
+},
+
+{
+q: "Which protocol is primarily responsible for translating domain names into IP addresses?",
+o: [
+"DHCP",
+"DNS",
+"FTP",
+"SMTP"
+],
+a: 1
+}
+  
+];
+
+let current = 0;
+let score = 0;
+
+// ✅ Pick 60 random questions WITHOUT modifying quizData
+function pickRandomQuestions(bank, count) {
+  const copy = [...bank];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy.slice(0, count);
+}
+
+const examData = pickRandomQuestions(quizData, 60);
+
+let answers = new Array(examData.length).fill(null);
+let shuffledOptions = new Array(examData.length).fill(null);
+
+const questionEl = document.getElementById("question");
+const optionsEl = document.getElementById("options");
+const nextBtn = document.getElementById("nextBtn");
+const prevBtn = document.getElementById("prevBtn");
+const counterEl = document.getElementById("counter");
+const resultEl = document.getElementById("result");
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+function loadQuestion() {
+  const q = examData[current];
+
+  counterEl.textContent = `Question ${current + 1} of ${examData.length}`;
+  questionEl.innerHTML = q.q;
+  optionsEl.innerHTML = "";
+
+  prevBtn.disabled = current === 0;
+
+  let optionsToRender;
+
+  if (shuffledOptions[current] === null) {
+    optionsToRender = q.o.map((text, index) => ({
+      text,
+      originalIndex: index
+    }));
+
+    shuffleArray(optionsToRender);
+    shuffledOptions[current] = optionsToRender;
+  } else {
+    optionsToRender = shuffledOptions[current];
+  }
+
+  optionsToRender.forEach(opt => {
+    const btn = document.createElement("button");
+    btn.textContent = opt.text;
+
+    if (answers[current] !== null) {
+      btn.disabled = true;
+
+      if (opt.originalIndex === q.a) {
+        btn.classList.add("correct");
+      }
+
+      if (
+        opt.originalIndex === answers[current] &&
+        answers[current] !== q.a
+      ) {
+        btn.classList.add("wrong");
+      }
+    }
+
+    btn.onclick = () => selectAnswer(opt.originalIndex);
+    optionsEl.appendChild(btn);
+  });
+}
+
+function selectAnswer(index) {
+  if (answers[current] !== null) return;
+
+  answers[current] = index;
+  if (index === examData[current].a) score++;
+
+  loadQuestion();
+}
+
+nextBtn.onclick = () => {
+  if (current < examData.length - 1) {
+    current++;
+    loadQuestion();
+  } else {
+    showResult();
+  }
+};
+
+prevBtn.onclick = () => {
+  if (current > 0) {
+    current--;
+    loadQuestion();
+  }
+};
+
+function showResult() {
+  questionEl.style.display = "none";
+  optionsEl.style.display = "none";
+  counterEl.style.display = "none";
+  document.querySelector(".nav-buttons").style.display = "none";
+
+  const percentage = ((score / examData.length) * 100).toFixed(2);
+  resultEl.style.display = "block";
+  restartBtn.style.display ="block";
+
+  resultEl.innerHTML = `
+    <p><strong>Quiz Completed</strong></p>
+    <p>Score: ${score} / ${examData.length}</p>
+    <p>Percentage: ${percentage}%</p>
+  `;
+}
+
+restartBtn.onclick = () => {
+  current = 0;
+  score = 0;
+
+  const newExamData = pickRandomQuestions(quizData, 60);
+  examData.length = 0;
+  examData.push(...newExamData);
+
+  answers = new Array(examData.length).fill(null);
+  shuffledOptions = new Array(examData.length).fill(null);
+
+  questionEl.style.display = "block";
+  optionsEl.style.display = "block";
+  counterEl.style.display = "block";
+  document.querySelector(".nav-buttons").style.display = "flex";
+  resultEl.style.display = "none";
+  restartBtn.style.display = "none";
+
+  prevBtn.disabled = true;
+  nextBtn.disabled = false;
+
+  loadQuestion();
+};
+
+loadQuestion();
+</script>
+
+</body>
+</html>
